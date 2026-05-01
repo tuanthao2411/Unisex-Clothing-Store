@@ -1,0 +1,199 @@
+<%- include("../partials/header") %>
+<div class="container py-4 admin-dashboard">
+  <div class="row g-3 mb-4">
+    <div class="col-xl-3 col-md-6">
+      <div class="surface-card stat-card p-4">
+        <div class="stat-head">
+          <span class="stat-icon stat-blue"><i class="bi bi-box-seam"></i></span>
+          <span class="stat-trend">+0%</span>
+        </div>
+        <p class="stat-label">Tong san pham</p>
+        <h3><%= productCount %></h3>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <div class="surface-card stat-card p-4">
+        <div class="stat-head">
+          <span class="stat-icon stat-green"><i class="bi bi-people"></i></span>
+          <span class="stat-trend">+0%</span>
+        </div>
+        <p class="stat-label">Tong khach hang</p>
+        <h3><%= customerCount %></h3>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <div class="surface-card stat-card p-4">
+        <div class="stat-head">
+          <span class="stat-icon stat-purple"><i class="bi bi-currency-dollar"></i></span>
+          <span class="stat-trend">+0%</span>
+        </div>
+        <p class="stat-label">Doanh thu hom nay</p>
+        <h3><%= Number(todayRevenue).toLocaleString("vi-VN") %> VND</h3>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <div class="surface-card stat-card p-4">
+        <div class="stat-head">
+          <span class="stat-icon stat-orange"><i class="bi bi-bag-check"></i></span>
+          <span class="stat-trend">+0%</span>
+        </div>
+        <p class="stat-label">Don hang moi</p>
+        <h3><%= todayOrderCount %></h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-lg-8">
+      <div class="surface-card p-4 chart-card">
+        <h5 class="admin-block-title">Doanh thu tuan nay</h5>
+        <canvas id="weeklyRevenueChart" height="130"></canvas>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="surface-card p-4 recent-orders-card">
+        <h5 class="admin-block-title">Don hang gan day</h5>
+        <% if (!recentOrders.length) { %>
+        <div class="recent-empty">
+          <p class="mb-1 fw-semibold">#001</p>
+          <p class="mb-1 text-muted">Chua co don hang</p>
+          <span class="status-wait">Cho xu ly</span>
+        </div>
+        <% } else { %>
+        <% recentOrders.forEach((order) => { %>
+        <div class="recent-order-item">
+          <div>
+            <p class="mb-1 fw-semibold">#<%= order.id %></p>
+            <small class="text-muted"><%= order.User ? order.User.fullName : "Khach hang" %></small>
+          </div>
+          <span class="<%= order.paymentStatus === 'paid' ? 'status-paid' : 'status-wait' %>">
+            <%= order.paymentStatus === "paid" ? "Da thanh toan" : "Cho xu ly" %>
+          </span>
+        </div>
+        <% }) %>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <div class="surface-card p-4 mb-4">
+    <h5 class="admin-block-title">San pham</h5>
+    <div class="table-responsive">
+      <table class="table admin-table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>TEN SAN PHAM</th>
+            <th>DANH MUC</th>
+            <th>GIA</th>
+            <th>TON KHO</th>
+            <th>TRANG THAI</th>
+            <th>THAO TAC</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% previewProducts.forEach((product) => { %>
+          <tr>
+            <td><%= product.name %></td>
+            <td>Unisex</td>
+            <td><%= Number(product.price).toLocaleString("vi-VN") %>d</td>
+            <td><%= product.stock %></td>
+            <td>
+              <span class="<%= product.stock > 0 ? 'status-instock' : 'status-outstock' %>">
+                <%= product.stock > 0 ? "Con hang" : "Het hang" %>
+              </span>
+            </td>
+            <td class="table-actions">
+              <a href="/shop/products"><i class="bi bi-eye"></i></a>
+              <a href="/admin/products/<%= product.id %>/edit"><i class="bi bi-pencil-square"></i></a>
+              <form action="/admin/products/<%= product.id %>?_method=DELETE" method="POST">
+                <button type="submit"><i class="bi bi-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-4">
+      <a href="/admin/products" class="surface-card quick-link p-4">
+        <span class="quick-icon stat-blue"><i class="bi bi-box"></i></span>
+        <h6>Quan ly san pham</h6>
+        <p class="mb-0 text-muted">Them, sua, xoa san pham</p>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="/admin/customers" class="surface-card quick-link p-4">
+        <span class="quick-icon stat-green"><i class="bi bi-people"></i></span>
+        <h6>Quan ly khach hang</h6>
+        <p class="mb-0 text-muted">Xem danh sach khach hang</p>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="/admin/revenue" class="surface-card quick-link p-4">
+        <span class="quick-icon stat-purple"><i class="bi bi-graph-up-arrow"></i></span>
+        <h6>Bao cao doanh thu</h6>
+        <p class="mb-0 text-muted">Thong ke va phan tich</p>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const labels = <%- JSON.stringify(weekdayLabels) %>;
+  const revenueSeries = <%- JSON.stringify(revenueSeries) %>;
+  const orderSeries = <%- JSON.stringify(orderSeries) %>;
+
+  const ctx = document.getElementById("weeklyRevenueChart");
+  if (ctx) {
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Doanh thu (VND)",
+            data: revenueSeries,
+            borderColor: "#7c3aed",
+            backgroundColor: "rgba(124, 58, 237, 0.08)",
+            borderWidth: 2,
+            tension: 0.35,
+          },
+          {
+            label: "Don hang",
+            data: orderSeries,
+            borderColor: "#3b82f6",
+            backgroundColor: "rgba(59, 130, 246, 0.08)",
+            borderWidth: 2,
+            tension: 0.35,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "bottom",
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: "#f1f1f1",
+            },
+          },
+          x: {
+            grid: {
+              color: "#f7f7f7",
+            },
+          },
+        },
+      },
+    });
+  }
+</script>
+<%- include("../partials/footer") %>

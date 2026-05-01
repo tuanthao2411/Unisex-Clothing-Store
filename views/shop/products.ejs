@@ -1,0 +1,61 @@
+<%- include("../partials/header") %>
+<section class="hero-clean">
+  <div class="hero-overlay container">
+    <h1>Define Your Style</h1>
+    <p>Gender-fluid fashion for the modern individual</p>
+    <a href="#arrivals" class="btn btn-light btn-lg px-4">EXPLORE COLLECTION</a>
+  </div>
+</section>
+
+<section class="container py-5">
+  <h2 class="section-title center-title">Shop by Category</h2>
+  <div class="row g-4 category-grid mt-1">
+    <div class="col-md-4">
+      <a href="#arrivals" class="category-card">
+        <img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=900" alt="Outerwear" />
+        <span>OUTERWEAR</span>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="#arrivals" class="category-card">
+        <img src="https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=900" alt="Essentials" />
+        <span>ESSENTIALS</span>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="#arrivals" class="category-card">
+        <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=900" alt="Accessories" />
+        <span>ACCESSORIES</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="arrivals" class="container pb-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="section-title mb-0">New Arrivals</h2>
+    <a class="view-all-link" href="/shop/products">VIEW ALL</a>
+  </div>
+
+  <div class="row g-4">
+    <% products.forEach((product) => { %>
+    <div class="col-md-6 col-lg-3">
+      <div class="arrival-card">
+        <img src="<%= product.imageUrl %>" class="arrival-image" alt="<%= product.name %>" />
+        <div class="pt-3">
+          <h6 class="mb-1"><%= product.name %></h6>
+          <p class="mb-2 arrival-price"><%= Number(product.price).toLocaleString("vi-VN") %>d</p>
+          <% if (currentUser && currentUser.role === "customer") { %>
+          <form method="POST" action="/shop/cart/add/<%= product.id %>">
+            <button class="btn btn-sm btn-dark">Them vao gio</button>
+          </form>
+          <% } else { %>
+          <a class="btn btn-sm btn-outline-dark" href="/login">Dang nhap de mua</a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+</section>
+<%- include("../partials/footer") %>

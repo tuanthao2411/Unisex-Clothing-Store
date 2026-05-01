@@ -1,0 +1,71 @@
+<%- include("../partials/header") %>
+<div class="container py-4 admin-dashboard">
+  <h4 class="admin-block-title mb-3"><%= product ? "Sua san pham" : "Them san pham" %></h4>
+  <div class="surface-card p-4">
+    <form action="<%= action %>" method="POST" class="row g-3">
+      <div class="col-md-7">
+        <label class="form-label admin-label">Ten san pham</label>
+        <input class="form-control" type="text" name="name" value="<%= product?.name || '' %>" placeholder="Vi du: Oversized Blazer" required />
+      </div>
+      <div class="col-md-5">
+        <label class="form-label admin-label">Gia (VND)</label>
+        <input class="form-control" type="number" name="price" value="<%= product?.price || 0 %>" min="0" required />
+      </div>
+      <div class="col-md-12">
+        <label class="form-label admin-label">Mo ta</label>
+        <textarea class="form-control" name="description" rows="4" placeholder="Mo ta ngan gon ve chat lieu, form dang..." required><%= product?.description || "" %></textarea>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label admin-label">Ton kho</label>
+        <input class="form-control" type="number" name="stock" value="<%= product?.stock || 0 %>" min="0" required />
+      </div>
+      <div class="col-md-8">
+        <label class="form-label admin-label">URL anh san pham</label>
+        <input
+          id="imageUrlInput"
+          class="form-control"
+          type="url"
+          name="imageUrl"
+          value="<%= product?.imageUrl || '' %>"
+          placeholder="https://.../image.jpg"
+          required
+        />
+        <small class="text-muted">Ban co the dan link anh truc tiep tu Unsplash, Cloudinary, CDN...</small>
+      </div>
+
+      <div class="col-md-12">
+        <div class="admin-image-preview-box">
+          <p class="admin-label mb-2">Xem truoc anh</p>
+          <img
+            id="imagePreview"
+            src="<%= product?.imageUrl || 'https://via.placeholder.com/800x450?text=Preview+Image' %>"
+            alt="Preview"
+            class="admin-image-preview"
+          />
+        </div>
+      </div>
+
+      <div class="col-12 d-flex gap-2">
+        <button class="btn btn-dark">Luu san pham</button>
+        <a href="/admin/products" class="btn btn-outline-dark">Quay lai</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const imageInput = document.getElementById("imageUrlInput");
+  const imagePreview = document.getElementById("imagePreview");
+  const fallbackImage = "https://via.placeholder.com/800x450?text=Preview+Image";
+
+  if (imageInput && imagePreview) {
+    imageInput.addEventListener("input", () => {
+      imagePreview.src = imageInput.value.trim() || fallbackImage;
+    });
+
+    imagePreview.addEventListener("error", () => {
+      imagePreview.src = fallbackImage;
+    });
+  }
+</script>
+<%- include("../partials/footer") %>

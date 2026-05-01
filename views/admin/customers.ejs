@@ -1,0 +1,39 @@
+<%- include("../partials/header") %>
+<div class="container py-4 admin-dashboard">
+  <div class="surface-card p-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+      <div>
+        <h4 class="admin-block-title mb-1">Quan ly khach hang</h4>
+        <p class="text-muted mb-0">Theo doi danh sach tai khoan khach hang da dang ky.</p>
+      </div>
+      <span class="status-instock"><%= customers.length %> khach hang</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table admin-table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>KHACH HANG</th>
+            <th>EMAIL</th>
+            <th>NGAY TAO</th>
+            <th>TRANG THAI</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% customers.forEach((c) => { %>
+          <tr>
+            <td class="d-flex align-items-center gap-2">
+              <span class="customer-avatar"><%= (c.fullName || "U").charAt(0).toUpperCase() %></span>
+              <span><%= c.fullName %></span>
+            </td>
+            <td><%= c.email %></td>
+            <td><%= new Date(c.createdAt).toLocaleString("vi-VN") %></td>
+            <td><span class="status-instock">Active</span></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<%- include("../partials/footer") %>

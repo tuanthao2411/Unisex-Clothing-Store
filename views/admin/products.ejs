@@ -1,0 +1,55 @@
+<%- include("../partials/header") %>
+<div class="container py-4 admin-dashboard">
+  <div class="surface-card p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+      <div>
+        <h4 class="admin-block-title mb-1">Quan ly san pham</h4>
+        <p class="text-muted mb-0">Cap nhat danh sach san pham va hinh anh cho storefront.</p>
+      </div>
+      <a href="/admin/products/new" class="btn btn-dark">Them san pham</a>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table admin-table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>HINH ANH</th>
+            <th>TEN SAN PHAM</th>
+            <th>GIA</th>
+            <th>TON KHO</th>
+            <th>TRANG THAI</th>
+            <th>THAO TAC</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% products.forEach((product) => { %>
+          <tr>
+            <td>
+              <img src="<%= product.imageUrl %>" alt="<%= product.name %>" class="admin-product-thumb" />
+            </td>
+            <td>
+              <p class="mb-1 fw-semibold"><%= product.name %></p>
+              <small class="text-muted"><%= product.description.slice(0, 55) %><%= product.description.length > 55 ? "..." : "" %></small>
+            </td>
+            <td><%= Number(product.price).toLocaleString("vi-VN") %> VND</td>
+            <td><%= product.stock %></td>
+            <td>
+              <span class="<%= product.stock > 0 ? 'status-instock' : 'status-outstock' %>">
+                <%= product.stock > 0 ? "Con hang" : "Het hang" %>
+              </span>
+            </td>
+            <td class="table-actions">
+              <a href="/shop/products" title="Xem"><i class="bi bi-eye"></i></a>
+              <a href="/admin/products/<%= product.id %>/edit" title="Sua"><i class="bi bi-pencil-square"></i></a>
+              <form action="/admin/products/<%= product.id %>?_method=DELETE" method="POST">
+                <button type="submit" title="Xoa"><i class="bi bi-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<%- include("../partials/footer") %>

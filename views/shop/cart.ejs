@@ -1,0 +1,54 @@
+<%- include("../partials/header") %>
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="surface-card p-4">
+      <h3 class="section-title mb-3">Gio hang cua ban</h3>
+      <% if (!items.length) { %>
+      <p class="text-muted mb-0">Chua co san pham nao trong gio.</p>
+      <% } else { %>
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>San pham</th>
+            <th>So luong</th>
+            <th>Gia</th>
+            <th>Thanh tien</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% items.forEach((item) => { %>
+          <tr>
+            <td><%= item.Product.name %></td>
+            <td><%= item.quantity %></td>
+            <td><%= Number(item.Product.price).toLocaleString("vi-VN") %> VND</td>
+            <td><%= Number(item.Product.price * item.quantity).toLocaleString("vi-VN") %> VND</td>
+            <td>
+              <form action="/shop/cart/remove/<%= item.id %>" method="POST">
+                <button class="btn btn-sm btn-outline-danger">Xoa</button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+      <% } %>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="surface-card p-4">
+      <h5 class="mb-3">Tom tat don hang</h5>
+      <div class="d-flex justify-content-between mb-2">
+        <span>Tong tien</span>
+        <strong><%= Number(total).toLocaleString("vi-VN") %> VND</strong>
+      </div>
+      <p class="text-muted small">Thanh toan online an toan qua Stripe Checkout.</p>
+      <form action="/shop/checkout" method="POST">
+        <button class="btn btn-dark w-100" <%= !items.length ? "disabled" : "" %>>
+          Thanh toan online
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+<%- include("../partials/footer") %>
