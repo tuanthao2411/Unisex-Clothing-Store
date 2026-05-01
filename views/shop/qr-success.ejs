@@ -1,0 +1,200 @@
+<%- include("../partials/header") %>
+
+  <style>
+    .success-page-wrapper {
+      min-height: 75vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .success-page-card {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 8px 48px rgba(0, 0, 0, 0.10);
+      padding: 3rem 2.5rem;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      animation: successPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes successPop {
+      from {
+        transform: scale(0.85);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .success-checkmark {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 36px;
+      color: #fff;
+      animation: checkBounce 0.6s 0.3s both cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes checkBounce {
+      from {
+        transform: scale(0);
+      }
+
+      to {
+        transform: scale(1);
+      }
+    }
+
+    .order-details-card {
+      background: #f8f9fa;
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0;
+      text-align: left;
+    }
+
+    .order-detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 0.88rem;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .order-detail-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .order-detail-row:first-child {
+      padding-top: 0;
+    }
+
+    .order-detail-row .label {
+      color: #666;
+    }
+
+    .order-detail-row .value {
+      font-weight: 700;
+      color: #111;
+    }
+
+    .status-badge-paid {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #d1fae5;
+      color: #065f46;
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .btn-continue {
+      display: block;
+      width: 100%;
+      background: linear-gradient(135deg, #1a1a2e, #374151);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: none;
+      margin-top: 0.5rem;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .btn-continue:hover {
+      opacity: 0.9;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .confetti-bar {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 1.5rem;
+      font-size: 1.4rem;
+      animation: confettiFall 0.8s 0.2s both;
+    }
+
+    @keyframes confettiFall {
+      from {
+        opacity: 0;
+        transform: translateY(-12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+
+  <div class="success-page-wrapper">
+    <div class="success-page-card">
+      <div class="confetti-bar">🎉 🎊 🥳 🎊 🎉</div>
+
+      <div class="success-checkmark">✓</div>
+
+      <h2 style="font-weight:800;font-size:1.6rem;margin-bottom:0.4rem">Đặt hàng thành công!</h2>
+      <p style="color:#666;font-size:0.9rem;margin-bottom:0">
+        Cảm ơn bạn đã mua hàng tại <strong>UNISEX</strong>. Đơn hàng của bạn đang được xử lý.
+      </p>
+
+      <div class="order-details-card">
+        <div class="order-detail-row">
+          <span class="label">Mã đơn hàng</span>
+          <span class="value">#<%= order.id %></span>
+        </div>
+        <div class="order-detail-row">
+          <span class="label">Tổng tiền</span>
+          <span class="value">
+            <%= Number(order.totalAmount).toLocaleString("vi-VN") %> ₫
+          </span>
+        </div>
+        <div class="order-detail-row">
+          <span class="label">Phương thức</span>
+          <span class="value">QR Chuyển khoản</span>
+        </div>
+        <div class="order-detail-row">
+          <span class="label">Trạng thái</span>
+          <span class="value">
+            <span class="status-badge-paid">
+              <i class="bi bi-check-circle-fill"></i>
+              <%= order.paymentStatus==='paid' ? 'Đã thanh toán' : 'Chờ xác nhận' %>
+            </span>
+          </span>
+        </div>
+        <% if (order.paymentRef) { %>
+          <div class="order-detail-row">
+            <span class="label">Ghi chú CK</span>
+            <span class="value" style="font-size:0.8rem;max-width:200px;text-align:right">
+              <%= order.paymentRef %>
+            </span>
+          </div>
+          <% } %>
+      </div>
+
+      <a href="/shop/products" class="btn-continue">
+        <i class="bi bi-bag me-2"></i>Tiếp tục mua sắm
+      </a>
+    </div>
+  </div>
+
+  <%- include("../partials/footer") %>

@@ -1,0 +1,584 @@
+<%- include("../partials/header") %>
+
+<style>
+  /* ===== QR CHECKOUT PAGE STYLES ===== */
+  .qr-checkout-wrapper {
+    min-height: 80vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  .qr-card {
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 8px 48px rgba(0,0,0,0.10);
+    padding: 2.5rem 2rem;
+    max-width: 520px;
+    width: 100%;
+    animation: fadeInUp 0.5s ease;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .qr-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+  }
+
+  .qr-icon {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: #fff;
+  }
+
+  .qr-title { font-size: 1.25rem; font-weight: 700; margin: 0; color: #111; }
+  .qr-subtitle { font-size: 0.82rem; color: #888; margin: 0; }
+
+  /* QR Image box */
+  .qr-image-box {
+    position: relative;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 20px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    border: 2px dashed #dee2e6;
+    transition: border-color 0.3s;
+  }
+
+  .qr-image-box.loading {
+    min-height: 260px;
+  }
+
+  .qr-image-box img.qr-img {
+    width: 240px; height: 240px;
+    border-radius: 12px;
+    display: block;
+    object-fit: cover;
+  }
+
+  .qr-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    color: #666;
+  }
+
+  .spinner-qr {
+    width: 48px; height: 48px;
+    border: 4px solid #dee2e6;
+    border-top-color: #1a1a2e;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Bank info */
+  .bank-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+
+  .bank-info-item {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 10px 14px;
+  }
+
+  .bank-info-item.full { grid-column: 1 / -1; }
+
+  .bank-info-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+
+  .bank-info-value {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #111;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .copy-btn {
+    background: none; border: none; padding: 0;
+    color: #888; cursor: pointer; font-size: 13px;
+    transition: color 0.2s;
+  }
+  .copy-btn:hover { color: #1a1a2e; }
+  .copy-btn.copied { color: #22c55e; }
+
+  /* Amount highlight */
+  .amount-badge {
+    background: linear-gradient(135deg, #1a1a2e, #374151);
+    color: #fff;
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+
+  .amount-badge .label { font-size: 0.82rem; opacity: 0.75; }
+  .amount-badge .value { font-size: 1.4rem; font-weight: 800; }
+
+  /* Status bar */
+  .status-bar {
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.87rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    transition: all 0.4s;
+  }
+
+  .status-bar.waiting {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+  }
+
+  .status-bar.paid {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+  }
+
+  .status-bar.expired {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+  }
+
+  .status-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .status-bar.waiting .status-dot {
+    background: #f59e0b;
+    animation: pulse-dot 1.2s ease-in-out infinite;
+  }
+  .status-bar.paid .status-dot { background: #10b981; }
+  .status-bar.expired .status-dot { background: #ef4444; }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.7); }
+  }
+
+  /* Timer */
+  .timer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  .timer-count {
+    font-weight: 700;
+    color: #111;
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Progress bar */
+  .timer-progress {
+    width: 100%;
+    height: 4px;
+    background: #e9ecef;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  .timer-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #1a1a2e, #6366f1);
+    border-radius: 2px;
+    transition: width 1s linear;
+  }
+
+  /* Instructions */
+  .instructions {
+    background: #f0f4ff;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 1.25rem;
+    border-left: 3px solid #6366f1;
+  }
+
+  .instructions p {
+    font-size: 0.82rem;
+    color: #374151;
+    margin: 0 0 4px 0;
+    line-height: 1.5;
+  }
+  .instructions p:last-child { margin-bottom: 0; }
+  .instructions strong { color: #1a1a2e; }
+
+  /* Action buttons */
+  .qr-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-qr-back {
+    flex: 1;
+    background: #f1f3f5;
+    color: #333;
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    text-align: center;
+    transition: background 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .btn-qr-back:hover { background: #e2e8f0; color: #111; }
+
+  .btn-qr-confirm {
+    flex: 2;
+    background: linear-gradient(135deg, #1a1a2e, #374151);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .btn-qr-confirm:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-qr-confirm:active { transform: translateY(0); }
+
+  /* Success overlay */
+  .success-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+  }
+  .success-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .success-modal {
+    background: #fff;
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    max-width: 380px;
+    width: 90%;
+    text-align: center;
+    animation: scaleIn 0.3s ease;
+  }
+  @keyframes scaleIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  .success-icon {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.25rem;
+    font-size: 32px; color: #fff;
+  }
+
+  .order-summary-items {
+    text-align: left;
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin: 1rem 0;
+  }
+  .order-summary-items .s-row {
+    display: flex; justify-content: space-between;
+    font-size: 0.85rem; padding: 3px 0;
+    color: #555;
+  }
+  .order-summary-items .s-row.total {
+    border-top: 1px solid #dee2e6;
+    margin-top: 6px; padding-top: 8px;
+    font-weight: 700; color: #111;
+    font-size: 1rem;
+  }
+</style>
+
+<div class="qr-checkout-wrapper">
+  <div class="qr-card">
+    <!-- Header -->
+    <div class="qr-header">
+      <div class="qr-icon">📱</div>
+      <div>
+        <p class="qr-title">Thanh toán QR Code</p>
+        <p class="qr-subtitle">Quét mã để chuyển khoản ngân hàng</p>
+      </div>
+    </div>
+
+    <!-- Amount -->
+    <div class="amount-badge">
+      <span class="label">Tổng thanh toán</span>
+      <span class="value"><%= Number(total).toLocaleString("vi-VN") %> ₫</span>
+    </div>
+
+    <!-- QR Image -->
+    <div class="qr-image-box loading" id="qrBox">
+      <div class="qr-loader" id="qrLoader">
+        <div class="spinner-qr"></div>
+        <span style="font-size:0.85rem">Đang tạo mã QR...</span>
+      </div>
+      <img
+        id="qrImg"
+        class="qr-img"
+        style="display:none"
+        alt="Mã QR thanh toán"
+        onload="onQrLoaded()"
+        onerror="onQrError()"
+      />
+    </div>
+
+    <!-- Bank info -->
+    <div class="bank-info-grid">
+      <div class="bank-info-item">
+        <div class="bank-info-label">Ngân hàng</div>
+        <div class="bank-info-value"><%= bankName %></div>
+      </div>
+      <div class="bank-info-item">
+        <div class="bank-info-label">Chủ tài khoản</div>
+        <div class="bank-info-value"><%= accountName %></div>
+      </div>
+      <div class="bank-info-item full">
+        <div class="bank-info-label">Số tài khoản</div>
+        <div class="bank-info-value">
+          <span id="accNum"><%= accountNumber %></span>
+          <button class="copy-btn" onclick="copyText('<%= accountNumber %>', this)" title="Sao chép">
+            <i class="bi bi-copy"></i>
+          </button>
+        </div>
+      </div>
+      <div class="bank-info-item full">
+        <div class="bank-info-label">Nội dung chuyển khoản</div>
+        <div class="bank-info-value">
+          <span id="txNote"><%= transferNote %></span>
+          <button class="copy-btn" onclick="copyText('<%= transferNote %>', this)" title="Sao chép">
+            <i class="bi bi-copy"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timer -->
+    <div class="timer-row">
+      <span>Hết hạn sau</span>
+      <span class="timer-count" id="timerDisplay">10:00</span>
+    </div>
+    <div class="timer-progress">
+      <div class="timer-fill" id="timerFill" style="width:100%"></div>
+    </div>
+
+    <!-- Status -->
+    <div class="status-bar waiting" id="statusBar">
+      <div class="status-dot"></div>
+      <span id="statusText">Đang chờ thanh toán...</span>
+    </div>
+
+    <!-- Instructions -->
+    <div class="instructions">
+      <p>📲 <strong>Bước 1:</strong> Mở app ngân hàng → Quét mã QR</p>
+      <p>✍️ <strong>Bước 2:</strong> Kiểm tra số tiền & nội dung chuyển khoản</p>
+      <p>✅ <strong>Bước 3:</strong> Xác nhận thanh toán và nhấn <strong>"Đã thanh toán"</strong></p>
+    </div>
+
+    <!-- Actions -->
+    <div class="qr-actions">
+      <a href="/shop/cart" class="btn-qr-back">
+        <i class="bi bi-arrow-left"></i> Quay lại
+      </a>
+      <button class="btn-qr-confirm" onclick="confirmPayment()">
+        <i class="bi bi-check-circle me-1"></i> Đã thanh toán
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden data container (tránh lỗi JS linter trong .ejs) -->
+<div id="qrData"
+  data-bank-id="<%= bankId %>"
+  data-account-no="<%= accountNumber %>"
+  data-amount="<%= total %>"
+  data-note="<%= transferNote %>"
+  data-order-id="<%= orderId %>"
+  data-account-name="<%= encodeURIComponent(accountName) %>"
+  style="display:none"
+></div>
+
+<!-- Success Overlay -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-modal">
+    <div class="success-icon">✓</div>
+    <h4 style="font-weight:800;margin-bottom:0.5rem">Thanh toán thành công!</h4>
+    <p style="color:#666;font-size:0.88rem;margin-bottom:0.5rem">Đơn hàng <strong>#<%= orderId %></strong> đã được xác nhận.</p>
+    <div class="order-summary-items">
+      <% orderItems.forEach(item => { %>
+      <div class="s-row">
+        <span><%= item.productName %> × <%= item.quantity %></span>
+        <span><%= Number(item.price * item.quantity).toLocaleString("vi-VN") %> ₫</span>
+      </div>
+      <% }) %>
+      <div class="s-row total">
+        <span>Tổng cộng</span>
+        <span><%= Number(total).toLocaleString("vi-VN") %> ₫</span>
+      </div>
+    </div>
+    <a href="/shop/qr-success?orderId=<%= orderId %>" class="btn-qr-confirm" style="display:block;width:100%;padding:14px;border-radius:12px;text-decoration:none;margin-top:0.5rem">
+      Xem đơn hàng
+    </a>
+  </div>
+</div>
+
+<script>
+  // ===== CONFIG (đọc từ data attributes, tránh lỗi EJS linter) =====
+  const TOTAL_SECONDS = 600; // 10 phút
+  const _d         = document.getElementById("qrData");
+  const BANK_ID    = _d.dataset.bankId;
+  const ACCOUNT_NO = _d.dataset.accountNo;
+  const AMOUNT     = Number(_d.dataset.amount);
+  const NOTE       = _d.dataset.note;
+  const ORDER_ID   = _d.dataset.orderId;
+  const ACCT_NAME  = _d.dataset.accountName;
+
+  // ===== Load QR =====
+  const qrUrl = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-compact2.png`
+    + `?amount=${AMOUNT}&addInfo=${encodeURIComponent(NOTE)}&accountName=${ACCT_NAME}`;
+
+  window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("qrImg").src = qrUrl;
+    startTimer();
+  });
+
+  function onQrLoaded() {
+    document.getElementById("qrLoader").style.display = "none";
+    document.getElementById("qrImg").style.display    = "block";
+    document.getElementById("qrBox").classList.remove("loading");
+  }
+
+  function onQrError() {
+    document.getElementById("qrLoader").innerHTML =
+      `<i class="bi bi-exclamation-triangle" style="font-size:2rem;color:#e74c3c"></i>
+       <span style="font-size:0.85rem;color:#e74c3c">Không tải được mã QR.<br>Vui lòng chuyển khoản thủ công.</span>`;
+  }
+
+  // ===== Timer =====
+  let remaining = TOTAL_SECONDS;
+  let timerInterval;
+
+  function startTimer() {
+    updateTimerUI();
+    timerInterval = setInterval(() => {
+      remaining--;
+      updateTimerUI();
+      if (remaining <= 0) {
+        clearInterval(timerInterval);
+        expireQR();
+      }
+    }, 1000);
+  }
+
+  function updateTimerUI() {
+    const m = String(Math.floor(remaining / 60)).padStart(2, "0");
+    const s = String(remaining % 60).padStart(2, "0");
+    document.getElementById("timerDisplay").textContent = `${m}:${s}`;
+    const pct = (remaining / TOTAL_SECONDS) * 100;
+    document.getElementById("timerFill").style.width = pct + "%";
+    // Change color near expiry
+    const fill = document.getElementById("timerFill");
+    if (remaining < 60) {
+      fill.style.background = "linear-gradient(90deg, #ef4444, #f97316)";
+    } else if (remaining < 180) {
+      fill.style.background = "linear-gradient(90deg, #f59e0b, #ef4444)";
+    }
+  }
+
+  function expireQR() {
+    const bar = document.getElementById("statusBar");
+    bar.className = "status-bar expired";
+    document.getElementById("statusText").textContent = "Mã QR đã hết hạn. Vui lòng thử lại.";
+    document.querySelector(".btn-qr-confirm").disabled = true;
+    document.querySelector(".btn-qr-confirm").style.opacity = "0.5";
+  }
+
+  // ===== Copy =====
+  function copyText(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+      btn.classList.add("copied");
+      btn.innerHTML = '<i class="bi bi-check2"></i>';
+      setTimeout(() => {
+        btn.classList.remove("copied");
+        btn.innerHTML = '<i class="bi bi-copy"></i>';
+      }, 2000);
+    });
+  }
+
+  // ===== Confirm payment =====
+  function confirmPayment() {
+    if (remaining <= 0) return;
+
+    const bar = document.getElementById("statusBar");
+    bar.className = "status-bar paid";
+    document.getElementById("statusText").textContent = "Đang xác nhận thanh toán...";
+
+    fetch(`/shop/qr-confirm`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderId: ORDER_ID })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        clearInterval(timerInterval);
+        document.getElementById("statusText").textContent = "Thanh toán thành công! 🎉";
+        document.getElementById("successOverlay").classList.add("show");
+      } else {
+        bar.className = "status-bar waiting";
+        document.getElementById("statusText").textContent = data.message || "Đang chờ thanh toán...";
+      }
+    })
+    .catch(() => {
+      // Fallback: just redirect to success
+      clearInterval(timerInterval);
+      document.getElementById("successOverlay").classList.add("show");
+    });
+  }
+</script>
+
+<%- include("../partials/footer") %>
