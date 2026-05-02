@@ -219,4 +219,8 @@ router.get("/qr-success", requireAuth, async (req, res) => {
   res.render("shop/qr-success", { title: "Dat hang thanh cong", order });
 });
 
+router.get("/", (req, res) => {
+    res.render("index");
+});
+
 module.exports = router;
