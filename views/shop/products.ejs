@@ -43,7 +43,7 @@
 <section id="arrivals" class="container pb-5">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="section-title mb-0">
-      <%= category ? (category.toUpperCase() + " • ") : "" %>New Arrivals
+      <%= typeof category !== "undefined" && category ? String(category).toUpperCase() + " • " : "" %>New Arrivals
     </h2>
     <a class="view-all-link" href="/shop/products">VIEW ALL</a>
   </div>

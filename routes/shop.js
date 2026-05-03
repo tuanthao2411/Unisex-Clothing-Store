@@ -29,8 +29,16 @@ const BANK_CONFIG = {
 };
 
 router.get("/products", async (req, res) => {
+  const raw = req.query.category;
+  const category =
+    typeof raw === "string" && raw.trim() ? raw.trim() : null;
+
   const products = await Product.findAll({ order: [["createdAt", "DESC"]] });
-  res.render("shop/products", { title: "Cua hang quan ao", products });
+  res.render("shop/products", {
+    title: "Cua hang quan ao",
+    products,
+    category,
+  });
 });
 
 router.post("/cart/add/:productId", requireAuth, async (req, res) => {
