@@ -11,21 +11,30 @@
   <h2 class="section-title center-title">Shop by Category</h2>
   <div class="row g-4 category-grid mt-1">
     <div class="col-md-4">
-      <a href="#arrivals" class="category-card">
-        <img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=900" alt="Outerwear" />
+      <a href="/shop/products?category=Top#arrivals" class="category-card">
+        <img
+          src="https://images.unsplash.com/photo-1609763127387-7847990aab59?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?w=900&auto=format&fit=crop&q=60"
+          alt="Top"
+        />
+        <span>TOP</span>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="/shop/products?category=Bottom#arrivals" class="category-card">
+        <img
+          src="https://images.unsplash.com/photo-1542272604-787c3835535d?w=900&auto=format&fit=crop&q=60"
+          alt="Bottom"
+        />
+        <span>BOTTOM</span>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="/shop/products?category=Outerwear#arrivals" class="category-card">
+        <img
+          src="https://images.unsplash.com/photo-1551028719-00167b16eac5?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?w=900&auto=format&fit=crop&q=60"
+          alt="Outerwear"
+        />
         <span>OUTERWEAR</span>
-      </a>
-    </div>
-    <div class="col-md-4">
-      <a href="#arrivals" class="category-card">
-        <img src="https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=900" alt="Essentials" />
-        <span>ESSENTIALS</span>
-      </a>
-    </div>
-    <div class="col-md-4">
-      <a href="#arrivals" class="category-card">
-        <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=900" alt="Accessories" />
-        <span>ACCESSORIES</span>
       </a>
     </div>
   </div>
@@ -33,7 +42,9 @@
 
 <section id="arrivals" class="container pb-5">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="section-title mb-0">New Arrivals</h2>
+    <h2 class="section-title mb-0">
+      <%= category ? (category.toUpperCase() + " • ") : "" %>New Arrivals
+    </h2>
     <a class="view-all-link" href="/shop/products">VIEW ALL</a>
   </div>
 
