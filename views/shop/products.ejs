@@ -52,6 +52,27 @@
         <div class="pt-3">
           <h6 class="mb-1"><%= productName(product) %></h6>
           <p class="mb-2 arrival-price"><%= Number(product.price).toLocaleString("vi-VN") %> <%= t("shop.currencySuffix") %></p>
+          <% if (currentUser && currentUser.role === "customer") { %>
+          <form method="POST" action="/shop/cart/add/<%= product.id %>">
+            <div class="d-flex gap-2 mb-2">
+              <select class="form-select form-select-sm" name="size">
+                <% product.sizeOptions.forEach((sz) => { %>
+                <option value="<%= sz %>"><%= t("shop.size") %> <%= sz %></option>
+                <% }) %>
+              </select>
+              <% if (product.colorOptionsParsed.length) { %>
+              <select class="form-select form-select-sm" name="color">
+                <% product.colorOptionsParsed.forEach((c) => { %>
+                <option value="<%= colorLabel(c) %>"><%= colorLabel(c) %></option>
+                <% }) %>
+              </select>
+              <% } %>
+            </div>
+            <button class="btn btn-sm btn-dark"><%= t("shop.addToCart") %></button>
+          </form>
+          <% } else { %>
+          <a class="btn btn-sm btn-outline-dark" href="/login"><%= t("shop.loginToBuy") %></a>
+          <% } %>
         </div>
       </div>
     </div>
@@ -67,6 +88,27 @@
         <div class="pt-3">
           <h6 class="mb-1"><%= productName(product) %></h6>
           <p class="mb-2 arrival-price"><%= Number(product.price).toLocaleString("vi-VN") %> <%= t("shop.currencySuffix") %></p>
+          <% if (currentUser && currentUser.role === "customer") { %>
+          <form method="POST" action="/shop/cart/add/<%= product.id %>">
+            <div class="d-flex gap-2 mb-2">
+              <select class="form-select form-select-sm" name="size">
+                <% product.sizeOptions.forEach((sz) => { %>
+                <option value="<%= sz %>"><%= t("shop.size") %> <%= sz %></option>
+                <% }) %>
+              </select>
+              <% if (product.colorOptionsParsed.length) { %>
+              <select class="form-select form-select-sm" name="color">
+                <% product.colorOptionsParsed.forEach((c) => { %>
+                <option value="<%= colorLabel(c) %>"><%= colorLabel(c) %></option>
+                <% }) %>
+              </select>
+              <% } %>
+            </div>
+            <button class="btn btn-sm btn-dark"><%= t("shop.addToCart") %></button>
+          </form>
+          <% } else { %>
+          <a class="btn btn-sm btn-outline-dark" href="/login"><%= t("shop.loginToBuy") %></a>
+          <% } %>
         </div>
       </div>
     </div>
