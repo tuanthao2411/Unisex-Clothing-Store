@@ -1,10 +1,10 @@
 <%- include("../partials/header") %>
 <div class="surface-card p-4">
-  <span class="badge text-bg-success mb-3">Thanh toan thanh cong</span>
-  <h3 class="section-title">Cam on ban da dat hang</h3>
-  <p class="mb-1">Ma don hang: #<%= order.id %></p>
-  <p class="mb-1">Tong tien: <%= Number(order.totalAmount).toLocaleString("vi-VN") %> VND</p>
-  <p class="mb-4">Trang thai: <strong><%= order.paymentStatus %></strong></p>
-  <a href="/shop/products" class="btn btn-dark">Tiep tuc mua sam</a>
+  <span class="badge text-bg-success mb-3">Thanh toán thành công</span>
+  <h3 class="section-title">Cảm ơn bạn đã đặt hàng</h3>
+  <p class="mb-1">Mã đơn hàng: #<%= order.id %></p>
+  <p class="mb-1">Tổng tiền: <%= Number(order.totalAmount).toLocaleString("vi-VN") %> VND</p>
+  <p class="mb-4">Trạng thái: <strong><%= order.paymentStatus %></strong></p>
+  <a href="/shop/products" class="btn btn-dark">Tiếp tục mua sắm</a>
 </div>
 <%- include("../partials/footer") %>

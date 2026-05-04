@@ -3,10 +3,10 @@
   <div class="surface-card p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
       <div>
-        <h4 class="admin-block-title mb-1">Quan ly san pham</h4>
-        <p class="text-muted mb-0">Cap nhat danh sach san pham va hinh anh cho storefront.</p>
+        <h4 class="admin-block-title mb-1">Quản lý sản phẩm</h4>
+        <p class="text-muted mb-0">Cập nhật danh sách sản phẩm và hình ảnh cho storefront.</p>
       </div>
-      <a href="/admin/products/new" class="btn btn-dark">Them san pham</a>
+      <a href="/admin/products/new" class="btn btn-dark">Thêm sản phẩm</a>
     </div>
 
     <div class="table-responsive">
@@ -14,11 +14,11 @@
         <thead>
           <tr>
             <th>HINH ANH</th>
-            <th>TEN SAN PHAM</th>
-            <th>GIA</th>
-            <th>TON KHO</th>
-            <th>TRANG THAI</th>
-            <th>THAO TAC</th>
+            <th>TÊN SẢN PHẨM</th>
+            <th>GIÁ</th>
+            <th>TỒN KHO</th>
+            <th>TRẠNG THÁI</th>
+            <th>THAO TÁC</th>
           </tr>
         </thead>
         <tbody>
@@ -35,14 +35,14 @@
             <td><%= product.stock %></td>
             <td>
               <span class="<%= product.stock > 0 ? 'status-instock' : 'status-outstock' %>">
-                <%= product.stock > 0 ? "Con hang" : "Het hang" %>
+                <%= product.stock > 0 ? "Còn hàng" : "Hết hàng" %>
               </span>
             </td>
             <td class="table-actions">
               <a href="/shop/products" title="Xem"><i class="bi bi-eye"></i></a>
-              <a href="/admin/products/<%= product.id %>/edit" title="Sua"><i class="bi bi-pencil-square"></i></a>
+              <a href="/admin/products/<%= product.id %>/edit" title="Sửa"><i class="bi bi-pencil-square"></i></a>
               <form action="/admin/products/<%= product.id %>?_method=DELETE" method="POST">
-                <button type="submit" title="Xoa"><i class="bi bi-trash"></i></button>
+                <button type="submit" title="Xóa"><i class="bi bi-trash"></i></button>
               </form>
             </td>
           </tr>

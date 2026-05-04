@@ -7,7 +7,7 @@
           <span class="stat-icon stat-blue"><i class="bi bi-box-seam"></i></span>
           <span class="stat-trend">+0%</span>
         </div>
-        <p class="stat-label">Tong san pham</p>
+        <p class="stat-label">Tổng sản phẩm</p>
         <h3><%= productCount %></h3>
       </div>
     </div>
@@ -17,7 +17,7 @@
           <span class="stat-icon stat-green"><i class="bi bi-people"></i></span>
           <span class="stat-trend">+0%</span>
         </div>
-        <p class="stat-label">Tong khach hang</p>
+        <p class="stat-label">Tổng khách hàng</p>
         <h3><%= customerCount %></h3>
       </div>
     </div>
@@ -27,7 +27,7 @@
           <span class="stat-icon stat-purple"><i class="bi bi-currency-dollar"></i></span>
           <span class="stat-trend">+0%</span>
         </div>
-        <p class="stat-label">Doanh thu hom nay</p>
+        <p class="stat-label">Doanh thu hôm nay</p>
         <h3><%= Number(todayRevenue).toLocaleString("vi-VN") %> VND</h3>
       </div>
     </div>
@@ -37,7 +37,7 @@
           <span class="stat-icon stat-orange"><i class="bi bi-bag-check"></i></span>
           <span class="stat-trend">+0%</span>
         </div>
-        <p class="stat-label">Don hang moi</p>
+        <p class="stat-label">Đơn hàng mới</p>
         <h3><%= todayOrderCount %></h3>
       </div>
     </div>
@@ -46,28 +46,28 @@
   <div class="row g-3 mb-4">
     <div class="col-lg-8">
       <div class="surface-card p-4 chart-card">
-        <h5 class="admin-block-title">Doanh thu tuan nay</h5>
+        <h5 class="admin-block-title">Doanh thu tuần này</h5>
         <canvas id="weeklyRevenueChart" height="130"></canvas>
       </div>
     </div>
     <div class="col-lg-4">
       <div class="surface-card p-4 recent-orders-card">
-        <h5 class="admin-block-title">Don hang gan day</h5>
+        <h5 class="admin-block-title">Đơn hàng gần đây</h5>
         <% if (!recentOrders.length) { %>
         <div class="recent-empty">
           <p class="mb-1 fw-semibold">#001</p>
-          <p class="mb-1 text-muted">Chua co don hang</p>
-          <span class="status-wait">Cho xu ly</span>
+          <p class="mb-1 text-muted">Chưa có đơn hàng</p>
+          <span class="status-wait">Chờ xử lý</span>
         </div>
         <% } else { %>
         <% recentOrders.forEach((order) => { %>
         <div class="recent-order-item">
           <div>
             <p class="mb-1 fw-semibold">#<%= order.id %></p>
-            <small class="text-muted"><%= order.User ? order.User.fullName : "Khach hang" %></small>
+            <small class="text-muted"><%= order.User ? order.User.fullName : "Khách hàng" %></small>
           </div>
           <span class="<%= order.paymentStatus === 'paid' ? 'status-paid' : 'status-wait' %>">
-            <%= order.paymentStatus === "paid" ? "Da thanh toan" : "Cho xu ly" %>
+            <%= order.paymentStatus === "paid" ? "Đã thanh toán" : "Chờ xử lý" %>
           </span>
         </div>
         <% }) %>
@@ -77,17 +77,17 @@
   </div>
 
   <div class="surface-card p-4 mb-4">
-    <h5 class="admin-block-title">San pham</h5>
+    <h5 class="admin-block-title">Sản phẩm</h5>
     <div class="table-responsive">
       <table class="table admin-table align-middle mb-0">
         <thead>
           <tr>
-            <th>TEN SAN PHAM</th>
-            <th>DANH MUC</th>
-            <th>GIA</th>
-            <th>TON KHO</th>
-            <th>TRANG THAI</th>
-            <th>THAO TAC</th>
+            <th>TÊN SẢN PHẨM</th>
+            <th>DANH MỤC</th>
+            <th>GIÁ</th>
+            <th>TỒN KHO</th>
+            <th>TRẠNG THÁI</th>
+            <th>THAO TÁC</th>
           </tr>
         </thead>
         <tbody>
@@ -95,11 +95,11 @@
           <tr>
             <td><%= product.name %></td>
             <td>Unisex</td>
-            <td><%= Number(product.price).toLocaleString("vi-VN") %>d</td>
+            <td><%= Number(product.price).toLocaleString("vi-VN") %>đ</td>
             <td><%= product.stock %></td>
             <td>
               <span class="<%= product.stock > 0 ? 'status-instock' : 'status-outstock' %>">
-                <%= product.stock > 0 ? "Con hang" : "Het hang" %>
+                <%= product.stock > 0 ? "Còn hàng" : "Hết hàng" %>
               </span>
             </td>
             <td class="table-actions">
@@ -120,22 +120,22 @@
     <div class="col-md-4">
       <a href="/admin/products" class="surface-card quick-link p-4">
         <span class="quick-icon stat-blue"><i class="bi bi-box"></i></span>
-        <h6>Quan ly san pham</h6>
-        <p class="mb-0 text-muted">Them, sua, xoa san pham</p>
+        <h6>Quản lý sản phẩm</h6>
+        <p class="mb-0 text-muted">Thêm, sửa, xóa sản phẩm</p>
       </a>
     </div>
     <div class="col-md-4">
       <a href="/admin/customers" class="surface-card quick-link p-4">
         <span class="quick-icon stat-green"><i class="bi bi-people"></i></span>
-        <h6>Quan ly khach hang</h6>
-        <p class="mb-0 text-muted">Xem danh sach khach hang</p>
+        <h6>Quản lý khách hàng</h6>
+        <p class="mb-0 text-muted">Xem danh sách khách hàng</p>
       </a>
     </div>
     <div class="col-md-4">
       <a href="/admin/revenue" class="surface-card quick-link p-4">
         <span class="quick-icon stat-purple"><i class="bi bi-graph-up-arrow"></i></span>
-        <h6>Bao cao doanh thu</h6>
-        <p class="mb-0 text-muted">Thong ke va phan tich</p>
+        <h6>Báo cáo doanh thu</h6>
+        <p class="mb-0 text-muted">Thống kê và phân tích</p>
       </a>
     </div>
   </div>
@@ -163,7 +163,7 @@
             tension: 0.35,
           },
           {
-            label: "Don hang",
+            label: "Đơn hàng",
             data: orderSeries,
             borderColor: "#3b82f6",
             backgroundColor: "rgba(59, 130, 246, 0.08)",

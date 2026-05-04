@@ -1,26 +1,26 @@
 <%- include("../partials/header") %>
 <div class="container py-4 admin-dashboard">
-  <h4 class="admin-block-title mb-3"><%= product ? "Sua san pham" : "Them san pham" %></h4>
+  <h4 class="admin-block-title mb-3"><%= product ? "Sửa sản phẩm" : "Thêm sản phẩm" %></h4>
   <div class="surface-card p-4">
     <form action="<%= action %>" method="POST" class="row g-3">
       <div class="col-md-7">
-        <label class="form-label admin-label">Ten san pham</label>
+        <label class="form-label admin-label">Tên sản phẩm</label>
         <input class="form-control" type="text" name="name" value="<%= product?.name || '' %>" placeholder="Vi du: Oversized Blazer" required />
       </div>
       <div class="col-md-5">
-        <label class="form-label admin-label">Gia (VND)</label>
+        <label class="form-label admin-label">Giá (VND)</label>
         <input class="form-control" type="number" name="price" value="<%= product?.price || 0 %>" min="0" required />
       </div>
       <div class="col-md-12">
-        <label class="form-label admin-label">Mo ta</label>
-        <textarea class="form-control" name="description" rows="4" placeholder="Mo ta ngan gon ve chat lieu, form dang..." required><%= product?.description || "" %></textarea>
+        <label class="form-label admin-label">Mô tả</label>
+        <textarea class="form-control" name="description" rows="4" placeholder="Mô tả ngắn gọn về chất liệu, form dáng..." required><%= product?.description || "" %></textarea>
       </div>
       <div class="col-md-4">
-        <label class="form-label admin-label">Ton kho</label>
+        <label class="form-label admin-label">Tồn kho</label>
         <input class="form-control" type="number" name="stock" value="<%= product?.stock || 0 %>" min="0" required />
       </div>
       <div class="col-md-8">
-        <label class="form-label admin-label">URL anh san pham</label>
+        <label class="form-label admin-label">URL ảnh sản phẩm</label>
         <input
           id="imageUrlInput"
           class="form-control"
@@ -30,12 +30,36 @@
           placeholder="https://.../image.jpg"
           required
         />
-        <small class="text-muted">Ban co the dan link anh truc tiep tu Unsplash, Cloudinary, CDN...</small>
+        <small class="text-muted">Bạn có thể dán link ảnh trực tiếp từ Unsplash, Cloudinary, CDN...</small>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label admin-label">Danh mục</label>
+        <select class="form-select" name="category">
+          <option value="Top" <%= product?.category === "Top" ? "selected" : "" %>>Top</option>
+          <option value="Bottom" <%= product?.category === "Bottom" ? "selected" : "" %>>Bottom</option>
+          <option value="Jacket" <%= product?.category === "Jacket" ? "selected" : "" %>>Jacket</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label admin-label">Collection</label>
+        <select class="form-select" name="collection">
+          <option value="" <%= !product?.collection ? "selected" : "" %>>None</option>
+          <option value="fw2025" <%= product?.collection === "fw2025" ? "selected" : "" %>>Fall-Winter 2025</option>
+          <option value="ss2026" <%= product?.collection === "ss2026" ? "selected" : "" %>>Spring-Summer 2026</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label admin-label">Sizes (CSV)</label>
+        <input class="form-control" type="text" name="sizesAvailable" value="<%= product?.sizesAvailable || 'S,M,L,XL' %>" />
+      </div>
+      <div class="col-md-12">
+        <label class="form-label admin-label">Color options (JSON)</label>
+        <textarea class="form-control" name="colorOptions" rows="2" placeholder='[{"key":"black","labelVi":"Đen","labelEn":"Black"}]'><%= product?.colorOptions || "" %></textarea>
       </div>
 
       <div class="col-md-12">
         <div class="admin-image-preview-box">
-          <p class="admin-label mb-2">Xem truoc anh</p>
+          <p class="admin-label mb-2">Xem trước ảnh</p>
           <img
             id="imagePreview"
             src="<%= product?.imageUrl || 'https://via.placeholder.com/800x450?text=Preview+Image' %>"
@@ -46,8 +70,8 @@
       </div>
 
       <div class="col-12 d-flex gap-2">
-        <button class="btn btn-dark">Luu san pham</button>
-        <a href="/admin/products" class="btn btn-outline-dark">Quay lai</a>
+        <button class="btn btn-dark">Lưu sản phẩm</button>
+        <a href="/admin/products" class="btn btn-outline-dark">Quay lại</a>
       </div>
     </form>
   </div>

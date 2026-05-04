@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%= lang || 'vi' %>">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -25,42 +25,45 @@
       <div class="container nav-shell">
         <a class="navbar-brand brand-logo" href="/shop/products">UNISEX</a>
         <div class="nav-center">
-          <a class="nav-link" href="/shop/products">NEW IN</a>
-          <a class="nav-link" href="/shop/products">COLLECTIONS</a>
-          <a class="nav-link" href="/shop/products">ESSENTIALS</a>
+          <a class="nav-link" href="/shop/products#arrivals"><%= t("nav.newIn") %></a>
+          <a class="nav-link" href="/shop/products#collections"><%= t("nav.collections") %></a>
           <% if (currentUser && currentUser.role === "admin") { %>
           <a class="nav-link about-pill" href="/admin/dashboard">ADMIN</a>
           <% } else { %>
-          <a class="nav-link about-pill" href="/shop/products">ABOUT</a>
+          <a class="nav-link about-pill" href="/shop/products"><%= t("nav.about") %></a>
           <% } %>
         </div>
         <div class="nav-right">
-          <a class="icon-link" href="/shop/products" aria-label="search"><i class="bi bi-search"></i></a>
+          <a class="icon-link" href="/shop/products" aria-label="<%= t('nav.search') %>"><i class="bi bi-search"></i></a>
+          <% const langLink = lang === "en" ? "/shop/products?lang=vi" : "/shop/products?lang=en"; %>
+          <a class="btn btn-sm btn-outline-dark" href="<%= langLink %>" title="<%= lang === 'en' ? t('nav.langTitle') : t('nav.langViTitle') %>">
+            <%= lang === "en" ? t("nav.langVi") : t("nav.lang") %>
+          </a>
           <% if (currentUser) { %>
           <% if (currentUser.role === "admin") { %>
           <form action="/logout" method="POST" class="d-inline">
             <button class="icon-btn" aria-label="logout"><i class="bi bi-box-arrow-right"></i></button>
           </form>
           <% } else { %>
-          <a class="icon-link" href="/shop/products" aria-label="profile"><i class="bi bi-person"></i></a>
-          <a class="icon-link" href="/shop/products" aria-label="wishlist"><i class="bi bi-heart"></i></a>
-          <a class="icon-link bag-link" href="/shop/cart" aria-label="cart">
+          <a class="icon-link" href="/shop/products" aria-label="<%= t('nav.profile') %>"><i class="bi bi-person"></i></a>
+          <a class="icon-link" href="/shop/products" aria-label="<%= t('nav.wishlist') %>"><i class="bi bi-heart"></i></a>
+          <a class="icon-link bag-link" href="/shop/cart" aria-label="<%= t('nav.cart') %>">
             <i class="bi bi-bag"></i>
             <span class="cart-badge"><%= typeof cartCount !== "undefined" ? cartCount : 0 %></span>
           </a>
           <form action="/logout" method="POST" class="d-inline ms-1">
-            <button class="btn btn-sm btn-dark px-2 py-1">Dang xuat</button>
+            <button class="btn btn-sm btn-dark px-2 py-1"><%= t("nav.logout") %></button>
           </form>
           <% } %>
           <% } else { %>
-          <a class="icon-link" href="/login" aria-label="profile"><i class="bi bi-person"></i></a>
-          <a class="icon-link" href="/shop/products" aria-label="wishlist"><i class="bi bi-heart"></i></a>
-          <a class="icon-link bag-link" href="/login" aria-label="cart">
+          <a class="icon-link" href="/login" aria-label="<%= t('nav.profile') %>"><i class="bi bi-person"></i></a>
+          <a class="icon-link" href="/shop/products" aria-label="<%= t('nav.wishlist') %>"><i class="bi bi-heart"></i></a>
+          <a class="icon-link bag-link" href="/login" aria-label="<%= t('nav.cart') %>">
             <i class="bi bi-bag"></i>
             <span class="cart-badge">0</span>
           </a>
-          <a class="btn btn-sm btn-outline-dark ms-1" href="/register">Dang ky</a>
-          <a class="btn btn-sm btn-dark ms-1" href="/login">Dang nhap</a>
+          <a class="btn btn-sm btn-outline-dark ms-1" href="/register"><%= t("nav.register") %></a>
+          <a class="btn btn-sm btn-dark ms-1" href="/login"><%= t("nav.login") %></a>
           <% } %>
         </div>
       </div>

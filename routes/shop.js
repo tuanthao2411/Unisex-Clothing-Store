@@ -4,6 +4,37 @@ const { Op, literal } = require("sequelize");
 const { requireAuth } = require("../middleware/auth");
 const { Product, CartItem, Order, OrderItem } = require("../models");
 
+function parseColorOptions(product) {
+  if (!product?.colorOptions) return [];
+  try {
+    const parsed = JSON.parse(product.colorOptions);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function mapProducts(rawProducts) {
+  return rawProducts.map((p) => {
+    const plain = p.toJSON();
+    const sizes = plain.sizesAvailable
+      ? plain.sizesAvailable.split(",").map((s) => s.trim()).filter(Boolean)
+      : ["S", "M", "L", "XL"];
+    return {
+      ...plain,
+      sizeOptions: sizes.length ? sizes : ["S", "M", "L", "XL"],
+      colorOptionsParsed: parseColorOptions(plain),
+    };
+  });
+}
+
+function buildVariantNote(item) {
+  const bits = [];
+  if (item.selectedSize) bits.push(`Size ${item.selectedSize}`);
+  if (item.selectedColor) bits.push(item.selectedColor);
+  return bits.join(" / ");
+}
+
 // Helper: giảm tồn kho sau khi thanh toán thành công
 async function decreaseStock(orderItems) {
   for (const item of orderItems) {
@@ -30,23 +61,62 @@ const BANK_CONFIG = {
 
 router.get("/products", async (req, res) => {
   const raw = req.query.category;
-  const category =
-    typeof raw === "string" && raw.trim() ? raw.trim() : null;
-
-  const products = await Product.findAll({ order: [["createdAt", "DESC"]] });
+  const category = typeof raw === "string" && raw.trim() ? raw.trim() : null;
+  const where = {};
+  if (category && ["Top", "Bottom", "Jacket"].includes(category)) {
+    where.category = category;
+  }
+  const productsRaw = await Product.findAll({
+    where,
+    order: [["createdAt", "DESC"]],
+  });
+  const products = mapProducts(productsRaw);
+  const fw2025 = products.filter((p) => p.collection === "fw2025");
+  const ss2026 = products.filter((p) => p.collection === "ss2026");
   res.render("shop/products", {
-    title: "Cua hang quan ao",
+    title: "Cửa hàng quần áo",
     products,
     category,
+    fw2025,
+    ss2026,
+    isShopAll: false,
+    sort: "latest",
+  });
+});
+
+router.get("/all", async (req, res) => {
+  const sort = req.query.sort === "oldest" ? "oldest" : "latest";
+  const productsRaw = await Product.findAll({
+    order: [["createdAt", sort === "oldest" ? "ASC" : "DESC"]],
+  });
+  const products = mapProducts(productsRaw);
+  const fw2025 = products.filter((p) => p.collection === "fw2025");
+  const ss2026 = products.filter((p) => p.collection === "ss2026");
+  res.render("shop/products", {
+    title: "Tất cả sản phẩm",
+    products,
+    category: null,
+    fw2025,
+    ss2026,
+    isShopAll: true,
+    sort,
   });
 });
 
 router.post("/cart/add/:productId", requireAuth, async (req, res) => {
   const product = await Product.findByPk(req.params.productId);
   if (!product) return res.redirect("/shop/products");
+  const selectedSize = typeof req.body.size === "string" && req.body.size.trim() ? req.body.size.trim() : "M";
+  const selectedColor =
+    typeof req.body.color === "string" && req.body.color.trim() ? req.body.color.trim() : "";
 
   const existing = await CartItem.findOne({
-    where: { UserId: req.currentUser.id, ProductId: product.id },
+    where: {
+      UserId: req.currentUser.id,
+      ProductId: product.id,
+      selectedSize,
+      selectedColor,
+    },
   });
 
   if (existing) {
@@ -57,6 +127,8 @@ router.post("/cart/add/:productId", requireAuth, async (req, res) => {
       UserId: req.currentUser.id,
       ProductId: product.id,
       quantity: 1,
+      selectedSize,
+      selectedColor,
     });
   }
   res.redirect("/shop/cart");
@@ -67,8 +139,15 @@ router.get("/cart", requireAuth, async (req, res) => {
     where: { UserId: req.currentUser.id },
     include: [Product],
   });
+  const mappedItems = items.map((item) => {
+    const plain = item.toJSON();
+    const variantLabel = [plain.selectedSize ? `Size ${plain.selectedSize}` : "", plain.selectedColor]
+      .filter(Boolean)
+      .join(" / ");
+    return { ...plain, variantLabel };
+  });
   const total = items.reduce((sum, item) => sum + item.quantity * item.Product.price, 0);
-  res.render("shop/cart", { title: "Gio hang", items, total });
+  res.render("shop/cart", { title: "Giỏ hàng", items: mappedItems, total });
 });
 
 router.post("/cart/remove/:id", requireAuth, async (req, res) => {
@@ -86,7 +165,7 @@ router.post("/checkout", requireAuth, async (req, res) => {
   if (!stripe) {
     return res.status(400).render("error", {
       title: "Missing Stripe Key",
-      message: "Hay cau hinh STRIPE_SECRET_KEY trong file .env de thanh toan online.",
+      message: "Hãy cấu hình STRIPE_SECRET_KEY trong file .env để thanh toán online.",
     });
   }
 
@@ -104,6 +183,7 @@ router.post("/checkout", requireAuth, async (req, res) => {
       productName: item.Product.name,
       price: item.Product.price,
       quantity: item.quantity,
+      variantNote: buildVariantNote(item),
     });
   }
 
@@ -143,7 +223,7 @@ router.get("/checkout/success", requireAuth, async (req, res) => {
     }
   }
 
-  res.render("shop/success", { title: "Thanh toan thanh cong", order });
+  res.render("shop/success", { title: "Thanh toán thành công", order });
 });
 
 // ===== QR CHECKOUT =====
@@ -171,6 +251,7 @@ router.get("/qr-checkout", requireAuth, async (req, res) => {
       productName: item.Product.name,
       price: item.Product.price,
       quantity: item.quantity,
+      variantNote: buildVariantNote(item),
     });
   }
 
@@ -180,7 +261,7 @@ router.get("/qr-checkout", requireAuth, async (req, res) => {
   const orderItems = await OrderItem.findAll({ where: { OrderId: order.id } });
 
   res.render("shop/qr-checkout", {
-    title: "Thanh toan QR Code",
+    title: "Thanh toán QR Code",
     total,
     orderId: order.id,
     orderItems,
@@ -224,7 +305,7 @@ router.get("/qr-success", requireAuth, async (req, res) => {
   const { orderId } = req.query;
   const order = await Order.findByPk(orderId);
   if (!order || order.UserId !== req.currentUser.id) return res.redirect("/shop/products");
-  res.render("shop/qr-success", { title: "Dat hang thanh cong", order });
+  res.render("shop/qr-success", { title: "Đặt hàng thành công", order });
 });
 
 router.get("/", (req, res) => {

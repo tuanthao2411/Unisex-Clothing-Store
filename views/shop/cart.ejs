@@ -2,30 +2,32 @@
 <div class="row g-4">
   <div class="col-lg-8">
     <div class="surface-card p-4">
-      <h3 class="section-title mb-3">Gio hang cua ban</h3>
+      <h3 class="section-title mb-3"><%= t("cart.title") %></h3>
       <% if (!items.length) { %>
-      <p class="text-muted mb-0">Chua co san pham nao trong gio.</p>
+      <p class="text-muted mb-0"><%= t("cart.empty") %></p>
       <% } else { %>
       <table class="table align-middle mb-0">
         <thead>
           <tr>
-            <th>San pham</th>
-            <th>So luong</th>
-            <th>Gia</th>
-            <th>Thanh tien</th>
+            <th><%= t("cart.product") %></th>
+            <th><%= t("cart.variant") %></th>
+            <th><%= t("cart.qty") %></th>
+            <th><%= t("cart.price") %></th>
+            <th><%= t("cart.subtotal") %></th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           <% items.forEach((item) => { %>
           <tr>
-            <td><%= item.Product.name %></td>
+            <td><%= productName(item.Product) %></td>
+            <td><%= item.variantLabel || "-" %></td>
             <td><%= item.quantity %></td>
             <td><%= Number(item.Product.price).toLocaleString("vi-VN") %> VND</td>
             <td><%= Number(item.Product.price * item.quantity).toLocaleString("vi-VN") %> VND</td>
             <td>
               <form action="/shop/cart/remove/<%= item.id %>" method="POST">
-                <button class="btn btn-sm btn-outline-danger">Xoa</button>
+                <button class="btn btn-sm btn-outline-danger"><%= t("cart.remove") %></button>
               </form>
             </td>
           </tr>

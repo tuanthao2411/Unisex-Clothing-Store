@@ -4,7 +4,7 @@ const { User } = require("../models");
 const router = express.Router();
 
 router.get("/register", (req, res) => {
-  res.render("auth/register", { title: "Dang ky", error: null });
+  res.render("auth/register", { title: "Đăng ký", error: null });
 });
 
 router.post("/register", async (req, res) => {
@@ -14,14 +14,14 @@ router.post("/register", async (req, res) => {
     return res.redirect("/login");
   } catch (error) {
     return res.render("auth/register", {
-      title: "Dang ky",
-      error: "Email da ton tai hoac du lieu khong hop le.",
+      title: "Đăng ký",
+      error: "Email đã tồn tại hoặc dữ liệu không hợp lệ.",
     });
   }
 });
 
 router.get("/login", (req, res) => {
-  res.render("auth/login", { title: "Dang nhap", error: null });
+  res.render("auth/login", { title: "Đăng nhập", error: null });
 });
 
 router.post("/login", async (req, res) => {
@@ -29,8 +29,8 @@ router.post("/login", async (req, res) => {
   const user = await User.findOne({ where: { email } });
   if (!user || !(await user.comparePassword(password))) {
     return res.render("auth/login", {
-      title: "Dang nhap",
-      error: "Thong tin dang nhap khong dung.",
+      title: "Đăng nhập",
+      error: "Thông tin đăng nhập không đúng.",
     });
   }
 

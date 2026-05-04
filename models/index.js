@@ -37,16 +37,44 @@ User.prototype.comparePassword = function comparePassword(rawPassword) {
 };
 
 const Product = sequelize.define("Product", {
+  slug: { type: DataTypes.STRING, allowNull: true, unique: true },
   name: { type: DataTypes.STRING, allowNull: false },
+  nameEn: { type: DataTypes.STRING, allowNull: true },
   description: { type: DataTypes.TEXT, allowNull: false },
   price: { type: DataTypes.INTEGER, allowNull: false },
   stock: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
   imageUrl: { type: DataTypes.STRING, allowNull: false },
+  category: { type: DataTypes.STRING(16), allowNull: true },
+  collection: {
+    type: DataTypes.STRING(32),
+    allowNull: true,
+  },
+  sizesAvailable: {
+    type: DataTypes.STRING(64),
+    allowNull: false,
+    defaultValue: "S,M,L,XL",
+  },
+  /** JSON: [{ "key","labelVi","labelEn","imageUrl" }] */
+  colorOptions: { type: DataTypes.TEXT, allowNull: true },
 });
 
-const CartItem = sequelize.define("CartItem", {
-  quantity: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 1 },
-});
+const CartItem = sequelize.define(
+  "CartItem",
+  {
+    quantity: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 1 },
+    selectedSize: { type: DataTypes.STRING(8), allowNull: false, defaultValue: "M" },
+    selectedColor: { type: DataTypes.STRING(32), allowNull: false, defaultValue: "" },
+  },
+  {
+    indexes: [
+      {
+        unique: true,
+        fields: ["UserId", "ProductId", "selectedSize", "selectedColor"],
+        name: "cart_user_product_variant",
+      },
+    ],
+  }
+);
 
 const Order = sequelize.define("Order", {
   totalAmount: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
@@ -61,6 +89,7 @@ const OrderItem = sequelize.define("OrderItem", {
   productName: { type: DataTypes.STRING, allowNull: false },
   price: { type: DataTypes.INTEGER, allowNull: false },
   quantity: { type: DataTypes.INTEGER, allowNull: false },
+  variantNote: { type: DataTypes.STRING(128), allowNull: true },
 });
 
 User.hasMany(CartItem, { onDelete: "CASCADE" });

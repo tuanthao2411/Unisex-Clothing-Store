@@ -16,6 +16,8 @@ const {
 const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
+const { langMiddleware } = require("./middleware/lang");
+const { seedCatalog } = require("./lib/seedCatalog");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -39,6 +41,7 @@ app.use(
     store: sessionStore,
   })
 );
+app.use(langMiddleware);
 
 app.use(async (req, res, next) => {
   res.locals.currentUser = null;
@@ -68,12 +71,12 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).render("error", {
     title: "Server Error",
-    message: "Co loi xay ra, vui long thu lai.",
+    message: "Có lỗi xảy ra, vui lòng thử lại.",
   });
 });
 
 async function bootstrap() {
-  await sequelize.sync();
+  await sequelize.sync({ alter: true });
   await sessionStore.sync();
 
   const adminEmail = process.env.ADMIN_EMAIL || "admin@shop.com";
@@ -88,27 +91,7 @@ async function bootstrap() {
     });
   }
 
-  const productCount = await Product.count();
-  if (!productCount) {
-    await Product.bulkCreate([
-      {
-        name: "Ao thun basic",
-        description: "Ao thun cotton form regular.",
-        price: 199000,
-        stock: 50,
-        imageUrl:
-          "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=700",
-      },
-      {
-        name: "Quan jean slim fit",
-        description: "Quan jean xanh den co gian nhe.",
-        price: 499000,
-        stock: 40,
-        imageUrl:
-          "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=700",
-      },
-    ]);
-  }
+  await seedCatalog();
 
   app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);

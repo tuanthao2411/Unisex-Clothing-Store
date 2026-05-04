@@ -78,12 +78,12 @@ router.get("/dashboard", async (req, res) => {
 
 router.get("/products", async (req, res) => {
   const products = await Product.findAll({ order: [["createdAt", "DESC"]] });
-  res.render("admin/products", { title: "Quan ly san pham", products });
+  res.render("admin/products", { title: "Quản lý sản phẩm", products });
 });
 
 router.get("/products/new", (req, res) => {
   res.render("admin/product-form", {
-    title: "Them san pham",
+    title: "Thêm sản phẩm",
     product: null,
     action: "/admin/products",
     method: "POST",
@@ -99,7 +99,7 @@ router.get("/products/:id/edit", async (req, res) => {
   const product = await Product.findByPk(req.params.id);
   if (!product) return res.redirect("/admin/products");
   res.render("admin/product-form", {
-    title: "Sua san pham",
+    title: "Sửa sản phẩm",
     product,
     action: `/admin/products/${product.id}?_method=PUT`,
     method: "PUT",
@@ -121,7 +121,7 @@ router.get("/customers", async (req, res) => {
     where: { role: "customer" },
     order: [["createdAt", "DESC"]],
   });
-  res.render("admin/customers", { title: "Quan ly khach hang", customers });
+  res.render("admin/customers", { title: "Quản lý khách hàng", customers });
 });
 
 router.get("/revenue", async (req, res) => {
@@ -135,7 +135,7 @@ router.get("/revenue", async (req, res) => {
     order: [[fn("date", col("createdAt")), "DESC"]],
   });
 
-  res.render("admin/revenue", { title: "Doanh thu theo ngay", rows });
+  res.render("admin/revenue", { title: "Doanh thu theo ngày", rows });
 });
 
 module.exports = router;
