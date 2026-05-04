@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<%= lang || 'vi' %>">
+<html lang="<%= locals.lang || 'vi' %>">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -35,7 +35,7 @@
         </div>
         <div class="nav-right">
           <a class="icon-link" href="/shop/products" aria-label="<%= t('nav.search') %>"><i class="bi bi-search"></i></a>
-          <% const langLink = lang === "en" ? "/shop/products?lang=vi" : "/shop/products?lang=en"; %>
+          <% const langLink = locals.lang === "en" ? "/shop/products?lang=vi" : "/shop/products?lang=en"; %>
           <a class="btn btn-sm btn-outline-dark" href="<%= langLink %>" title="<%= lang === 'en' ? t('nav.langTitle') : t('nav.langViTitle') %>">
             <%= lang === "en" ? t("nav.langVi") : t("nav.lang") %>
           </a>
