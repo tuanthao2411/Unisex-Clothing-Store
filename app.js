@@ -46,19 +46,25 @@ app.use(langMiddleware);
 app.use(async (req, res, next) => {
   res.locals.currentUser = null;
   res.locals.cartCount = 0;
+  
   if (req.session.userId) {
     const user = await User.findByPk(req.session.userId);
     if (user) {
       req.currentUser = user;
       res.locals.currentUser = user;
-      if (user.role === "customer") {
-        res.locals.cartCount = await CartItem.sum("quantity", {
-          where: { UserId: user.id },
-        });
-        res.locals.cartCount = res.locals.cartCount || 0;
-      }
     }
   }
+
+  const whereClause = res.locals.currentUser 
+    ? { UserId: res.locals.currentUser.id } 
+    : { sessionId: req.sessionID };
+    
+  if (!res.locals.currentUser || res.locals.currentUser.role === "customer") {
+    res.locals.cartCount = await CartItem.sum("quantity", {
+      where: whereClause,
+    }) || 0;
+  }
+  
   next();
 });
 

@@ -47,29 +47,67 @@
 
       <hr class="my-3">
 
-      <!-- Thanh toán QR (nổi bật) -->
-      <a href="/shop/qr-checkout"
-         class="btn w-100 mb-2 d-flex align-items-center justify-content-center gap-2 <%= !items.length ? 'disabled' : '' %>"
-         style="background:linear-gradient(135deg,#1a1a2e,#374151);color:#fff;border-radius:12px;padding:12px;font-weight:700;text-decoration:none;"
-         <%= !items.length ? 'tabindex="-1" aria-disabled="true"' : '' %>>
-        <span style="font-size:1.1rem">📱</span>
-        Thanh toán QR Code
-      </a>
+      <!-- Checkout Buttons -->
+      <% if (currentUser) { %>
+        <!-- Thanh toán QR (nổi bật) -->
+        <a href="/shop/qr-checkout"
+           class="btn w-100 mb-2 d-flex align-items-center justify-content-center gap-2 <%= !items.length ? 'disabled' : '' %>"
+           style="background:linear-gradient(135deg,#1a1a2e,#374151);color:#fff;border-radius:12px;padding:12px;font-weight:700;text-decoration:none;"
+           <%= !items.length ? 'tabindex="-1" aria-disabled="true"' : '' %>>
+          <span style="font-size:1.1rem">📱</span>
+          Thanh toán QR Code
+        </a>
 
-      <p class="text-muted" style="font-size:0.78rem;text-align:center;margin-bottom:0.75rem">
-        Chuyển khoản ngân hàng qua mã QR — nhanh &amp; miễn phí
-      </p>
+        <p class="text-muted" style="font-size:0.78rem;text-align:center;margin-bottom:0.75rem">
+          Chuyển khoản ngân hàng qua mã QR — nhanh &amp; miễn phí
+        </p>
 
-      <div style="text-align:center;font-size:0.78rem;color:#aaa;margin-bottom:0.75rem">— hoặc —</div>
+        <div style="text-align:center;font-size:0.78rem;color:#aaa;margin-bottom:0.75rem">— hoặc —</div>
 
-      <!-- Thanh toán Stripe -->
-      <form action="/shop/checkout" method="POST">
-        <button class="btn btn-outline-dark w-100" style="border-radius:12px;padding:10px;font-size:0.88rem;"
-                <%= !items.length ? "disabled" : "" %>>
-          💳 Thanh toán Stripe
+        <!-- Thanh toán Stripe -->
+        <form action="/shop/checkout" method="POST">
+          <button class="btn btn-outline-dark w-100" style="border-radius:12px;padding:10px;font-size:0.88rem;"
+                  <%= !items.length ? "disabled" : "" %>>
+            💳 Thanh toán Stripe
+          </button>
+        </form>
+      <% } else { %>
+        <button class="btn btn-dark w-100 mb-2" style="border-radius:12px;padding:12px;font-weight:700;" data-bs-toggle="modal" data-bs-target="#loginModal" <%= !items.length ? 'disabled' : '' %>>
+          Xác nhận đơn
         </button>
-      </form>
+      <% } %>
     </div>
   </div>
 </div>
+<% if (!currentUser) { %>
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title" id="loginModalLabel">Đăng nhập để tiếp tục</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="/login">
+          <input type="hidden" name="returnTo" value="/shop/cart" />
+          <input class="form-control mb-3" type="email" name="email" placeholder="Email" required />
+          <input
+            class="form-control mb-3"
+            type="password"
+            name="password"
+            placeholder="Mật khẩu"
+            required
+          />
+          <button class="btn btn-dark w-100">Đăng nhập</button>
+        </form>
+        <div class="text-center mt-3">
+          <span class="text-muted small">Chưa có tài khoản?</span>
+          <a href="/register" class="small text-decoration-none">Đăng ký</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>
 <%- include("../partials/footer") %>

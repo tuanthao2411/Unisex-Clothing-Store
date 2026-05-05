@@ -61,18 +61,10 @@ const Product = sequelize.define("Product", {
 const CartItem = sequelize.define(
   "CartItem",
   {
+    sessionId: { type: DataTypes.STRING, allowNull: true },
     quantity: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 1 },
     selectedSize: { type: DataTypes.STRING(8), allowNull: false, defaultValue: "M" },
     selectedColor: { type: DataTypes.STRING(32), allowNull: false, defaultValue: "" },
-  },
-  {
-    indexes: [
-      {
-        unique: true,
-        fields: ["UserId", "ProductId", "selectedSize", "selectedColor"],
-        name: "cart_user_product_variant",
-      },
-    ],
   }
 );
 

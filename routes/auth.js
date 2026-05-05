@@ -1,5 +1,5 @@
 const express = require("express");
-const { User } = require("../models");
+const { User, CartItem } = require("../models");
 
 const router = express.Router();
 
@@ -21,22 +21,32 @@ router.post("/register", async (req, res) => {
 });
 
 router.get("/login", (req, res) => {
-  res.render("auth/login", { title: "Đăng nhập", error: null });
+  const returnTo = req.query.returnTo || "/shop/products";
+  res.render("auth/login", { title: "Đăng nhập", error: null, returnTo });
 });
 
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, returnTo } = req.body;
   const user = await User.findOne({ where: { email } });
   if (!user || !(await user.comparePassword(password))) {
     return res.render("auth/login", {
       title: "Đăng nhập",
       error: "Thông tin đăng nhập không đúng.",
+      returnTo: returnTo || "/shop/products"
     });
   }
 
   req.session.userId = user.id;
+  
+  if (user.role === "customer") {
+    await CartItem.update(
+      { UserId: user.id, sessionId: null },
+      { where: { sessionId: req.sessionID } }
+    );
+  }
+
   if (user.role === "admin") return res.redirect("/admin/dashboard");
-  return res.redirect("/shop/products");
+  return res.redirect(returnTo || "/shop/products");
 });
 
 router.post("/logout", (req, res) => {

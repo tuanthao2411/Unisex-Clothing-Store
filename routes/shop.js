@@ -103,40 +103,43 @@ router.get("/all", async (req, res) => {
   });
 });
 
-router.post("/cart/add/:productId", requireAuth, async (req, res) => {
+router.post("/cart/add/:productId", async (req, res) => {
   const product = await Product.findByPk(req.params.productId);
   if (!product) return res.redirect("/shop/products");
   const selectedSize = typeof req.body.size === "string" && req.body.size.trim() ? req.body.size.trim() : "M";
   const selectedColor =
     typeof req.body.color === "string" && req.body.color.trim() ? req.body.color.trim() : "";
 
-  const existing = await CartItem.findOne({
-    where: {
-      UserId: req.currentUser.id,
-      ProductId: product.id,
-      selectedSize,
-      selectedColor,
-    },
-  });
+  const whereClause = {
+    ProductId: product.id,
+    selectedSize,
+    selectedColor,
+  };
+  
+  if (req.currentUser) {
+    whereClause.UserId = req.currentUser.id;
+  } else {
+    whereClause.sessionId = req.sessionID;
+  }
+
+  const existing = await CartItem.findOne({ where: whereClause });
 
   if (existing) {
     existing.quantity += 1;
     await existing.save();
   } else {
     await CartItem.create({
-      UserId: req.currentUser.id,
-      ProductId: product.id,
+      ...whereClause,
       quantity: 1,
-      selectedSize,
-      selectedColor,
     });
   }
   res.redirect("/shop/cart");
 });
 
-router.get("/cart", requireAuth, async (req, res) => {
+router.get("/cart", async (req, res) => {
+  const whereClause = req.currentUser ? { UserId: req.currentUser.id } : { sessionId: req.sessionID };
   const items = await CartItem.findAll({
-    where: { UserId: req.currentUser.id },
+    where: whereClause,
     include: [Product],
   });
   const mappedItems = items.map((item) => {
@@ -150,8 +153,9 @@ router.get("/cart", requireAuth, async (req, res) => {
   res.render("shop/cart", { title: "Giỏ hàng", items: mappedItems, total });
 });
 
-router.post("/cart/remove/:id", requireAuth, async (req, res) => {
-  await CartItem.destroy({ where: { id: req.params.id, UserId: req.currentUser.id } });
+router.post("/cart/remove/:id", async (req, res) => {
+  const whereClause = req.currentUser ? { UserId: req.currentUser.id } : { sessionId: req.sessionID };
+  await CartItem.destroy({ where: { id: req.params.id, ...whereClause } });
   res.redirect("/shop/cart");
 });
 
